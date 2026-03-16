@@ -1,4 +1,4 @@
-import { APP_VERSION } from '@/constants/app-version';
+import { APP_NAME, APP_VERSION } from '@/constants/app-version';
 import { getMobileDetailsForLogin } from '@/utils/deviceInfo';
 import axios from 'axios';
 
@@ -20,6 +20,7 @@ function getLoginPayload(login: string, pass: string): Record<string, string> {
   const body: Record<string, string> = { login, password: pass };
   try {
     if (typeof APP_VERSION === 'string') body.app_version = APP_VERSION;
+    if (typeof APP_NAME === 'string') body.app_name = APP_NAME;
     body.mobile_details = getMobileDetailsForLogin();
   } catch {
     // omit app_version / mobile_details if they throw (e.g. Platform not available)
