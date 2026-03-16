@@ -42,7 +42,6 @@ import { useScreenPreloader } from '@/hooks/use-screen-preloader';
 import { APP_VERSION } from '@/constants/app-version';
 import { checkInternetConnection } from '@/utils/check-internet';
 import { getAppName } from '@/utils/app-config';
-import { getDefaultAuthenticatedRoute } from '@/utils/access-control';
 import { isVersionLower } from '@/utils/versionCompare';
 
 type FormErrors = {
@@ -478,8 +477,8 @@ export default function LoginScreen() {
 
     try {
       setLoading(true);
-      const accessPermissions = await login({ loginId, password, rememberMe: true, enableBiometric: false });
-      router.replace(getDefaultAuthenticatedRoute(accessPermissions));
+      await login({ loginId, password, rememberMe: true, enableBiometric: false });
+      router.replace('/(tabs)');
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Login failed. Please try again.';
       setErrors((prev) => ({ ...prev, form: message }));
@@ -524,7 +523,7 @@ export default function LoginScreen() {
         return;
       }
 
-      const accessPermissions = await login({
+      await login({
         loginId,
         password,
         rememberMe: true,
@@ -532,7 +531,7 @@ export default function LoginScreen() {
       });
 
       Alert.alert('Fingerprint Registered', 'Fingerprint login has been enabled for future sign-ins.');
-      router.replace(getDefaultAuthenticatedRoute(accessPermissions));
+      router.replace('/(tabs)');
     } catch (error) {
       const message =
         error instanceof Error
@@ -575,8 +574,8 @@ export default function LoginScreen() {
     try {
       setErrors((prev) => ({ ...prev, form: undefined }));
       setIsBiometricLoading(true);
-      const accessPermissions = await loginWithBiometrics();
-      router.replace(getDefaultAuthenticatedRoute(accessPermissions));
+      await loginWithBiometrics();
+      router.replace('/(tabs)');
     } catch (error) {
       if (error instanceof AuthFlowError && error.code === BIOMETRIC_CANCELLED_CODE) {
         return;

@@ -13,8 +13,6 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { APP_VERSION } from '@/constants/app-version';
-
 import { AppBarAction, type AppBarActionProps } from './AppBarAction';
 import { AppBarTitle } from './AppBarTitle';
 
@@ -121,9 +119,6 @@ export function AppBar({
         </View>
 
         <View style={styles.rightSlot}>
-          <Text numberOfLines={1} style={[styles.versionText, { color: subtitleColor }]}>
-            v{APP_VERSION}
-          </Text>
           {actions.map((action, index) => (
             <AppBarAction
               key={`${action.accessibilityLabel}_${index}`}
@@ -188,11 +183,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
-  },
-  versionText: {
-    marginRight: 8,
-    fontSize: 12,
-    fontWeight: '700',
   },
   avatarButton: {
     width: 36,
