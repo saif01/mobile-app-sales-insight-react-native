@@ -3,8 +3,11 @@ import { StyleSheet } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { useScreenPreloader } from '@/hooks/use-screen-preloader';
 
 export default function ModalScreen() {
+  useScreenPreloader();
+
   return (
     <ThemedView style={styles.container}>
       <ThemedText type="title">This is a modal</ThemedText>
