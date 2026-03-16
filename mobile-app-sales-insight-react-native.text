@@ -5,7 +5,7 @@ https://github.com/saif01/mobile-app-sales-insight-react-native.git
 
 For Run app in terminal 
 
-    from project root: D:\Android\Apk\cpbit_apk
+    from project root:
 
     npx expo run:android
 

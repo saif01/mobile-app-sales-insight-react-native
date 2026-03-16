@@ -5,7 +5,7 @@ import { Linking, Platform } from 'react-native';
 import { isUatEnabled } from '@/utils/app-config';
 
 const isUat = isUatEnabled();
-const APP_NAME = isUat ? 'CPB_IT_APK_UAT' : 'CPB_IT_APK';
+const APP_NAME = isUat ? 'Sales_Insight_APK_UAT' : 'Sales_Insight_APK';
 const VERSION_CHECK_ENDPOINT = 'https://it.cpbangladesh.com/api/mobileapp/apk_version_check';
 const APK_DOWNLOAD_ENDPOINT = 'https://it.cpbangladesh.com/api/mobileapp/apk_download_by_name';
 const APK_MIME_TYPE = 'application/vnd.android.package-archive';

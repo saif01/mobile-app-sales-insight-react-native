@@ -67,9 +67,20 @@ export default function SalesScreen() {
       <WebView
         source={{ uri: SALES_URL }}
         style={styles.webview}
+        javaScriptEnabled
+        domStorageEnabled
+        startInLoadingState
+        mixedContentMode="compatibility"
         onLoadStart={() => showLoader('Loading sales...')}
         onLoadEnd={hideLoader}
-        onError={hideLoader}
+        onError={(e) => {
+          hideLoader();
+          console.warn('Sales WebView error:', e.nativeEvent);
+        }}
+        onHttpError={(e) => {
+          hideLoader();
+          console.warn('Sales WebView HTTP error:', e.nativeEvent.statusCode, e.nativeEvent.url);
+        }}
       />
     </View>
   );

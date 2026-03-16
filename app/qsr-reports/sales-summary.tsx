@@ -67,9 +67,20 @@ export default function SalesSummaryScreen() {
       <WebView
         source={{ uri: SALES_SUMMARY_URL }}
         style={styles.webview}
+        javaScriptEnabled
+        domStorageEnabled
+        startInLoadingState
+        mixedContentMode="compatibility"
         onLoadStart={() => showLoader('Loading sales summary...')}
         onLoadEnd={hideLoader}
-        onError={hideLoader}
+        onError={(e) => {
+          hideLoader();
+          console.warn('Sales Summary WebView error:', e.nativeEvent);
+        }}
+        onHttpError={(e) => {
+          hideLoader();
+          console.warn('Sales Summary WebView HTTP error:', e.nativeEvent.statusCode, e.nativeEvent.url);
+        }}
       />
     </View>
   );
