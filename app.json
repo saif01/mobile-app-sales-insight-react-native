@@ -4,23 +4,23 @@
     "slug": "SalesInsight",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/appicon/ios/iTunesArtwork@2x.png",
     "scheme": "salesinsight",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "icon": "./assets/images/appicon/ios/iTunesArtwork@2x.png"
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+        "foregroundImage": "./assets/images/appicon/android/mipmap-xxxhdpi/ic_launcher_foreground.png"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.salesinsight.app"
+      "package": "com.salesinsight.app",
+      "icon": "./assets/images/appicon/android/playstore-icon.png"
     },
     "web": {
       "output": "static",
@@ -31,7 +31,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/appicon/ios/iTunesArtwork@2x.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
@@ -51,8 +51,15 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "b4260326-12c6-416a-b2fd-60782c3e2cfa"
+        "projectId": "1eb75847-8299-4304-9daa-d8a4cef09515"
       }
+    },
+    "owner": "syful01",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/1eb75847-8299-4304-9daa-d8a4cef09515"
     }
   }
 }
