@@ -1,10 +1,10 @@
-import Constants from 'expo-constants';
 import * as Updates from 'expo-updates';
 import * as WebBrowser from 'expo-web-browser';
 import {
   ArrowUpRight,
   BookText,
   Building2,
+  CircleCheckBig,
   HeartHandshake,
   Info,
   LifeBuoy,
@@ -46,7 +46,7 @@ import { compareVersions } from '@/utils/versionCompare';
 const APP_LOGO = require('@/assets/images/icon.png');
 
 const COMPANY_NAME = 'CPB-IT';
-const TAGLINE = 'Reliable reporting and business visibility for modern field teams.';
+const TAGLINE = 'Reliable reporting and business visibility.';
 
 type InfoRowProps = {
   label: string;
@@ -70,19 +70,11 @@ type ActionButtonProps = {
   primary?: boolean;
 };
 
-function getBuildNumber(): string {
-  const nativeBuildVersion = Constants.nativeBuildVersion;
-  if (typeof nativeBuildVersion === 'string' && nativeBuildVersion.trim().length > 0) {
-    return nativeBuildVersion.trim();
-  }
-
-  const androidVersionCode = Constants.expoConfig?.android?.versionCode;
-  if (typeof androidVersionCode === 'number') {
-    return String(androidVersionCode);
-  }
-
-  return 'N/A';
-}
+type HeroStatProps = {
+  icon: React.ComponentType<{ size?: number; color?: string; strokeWidth?: number }>;
+  label: string;
+  value: string;
+};
 
 function getLastUpdatedLabel(): string {
   const updateCreatedAt = (Updates as { createdAt?: Date | string }).createdAt;
@@ -166,6 +158,20 @@ function ActionButton({
   );
 }
 
+function HeroStat({ icon: Icon, label, value }: HeroStatProps) {
+  return (
+    <View style={styles.heroStat}>
+      <View style={styles.heroStatIconWrap}>
+        <Icon size={16} color="#163b6d" strokeWidth={2.1} />
+      </View>
+      <View style={styles.heroStatText}>
+        <Text style={styles.heroStatValue}>{value}</Text>
+        <Text style={styles.heroStatLabel}>{label}</Text>
+      </View>
+    </View>
+  );
+}
+
 export default function AboutAppScreen() {
   const { isOnline, isChecking } = useNetworkStatus();
   const [isCheckingUpdate, setIsCheckingUpdate] = useState(false);
@@ -194,7 +200,6 @@ export default function AboutAppScreen() {
     ]).start();
   }, [fadeAnim, logoScale, translateAnim]);
 
-  const buildNumber = useMemo(() => getBuildNumber(), []);
   const lastUpdated = useMemo(() => getLastUpdatedLabel(), []);
   const companyWebsite = useMemo(() => getAboutCompanyWebsite(), []);
   const supportEmail = useMemo(() => getAboutSupportEmail(), []);
@@ -301,11 +306,28 @@ export default function AboutAppScreen() {
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <Animated.View style={containerAnimatedStyle}>
           <View style={styles.heroCard}>
+            <View style={styles.heroOrbOne} />
+            <View style={styles.heroOrbTwo} />
+            <View style={styles.heroTopRow}>
+              <View style={styles.heroBadge}>
+                <Sparkles size={14} color="#163b6d" strokeWidth={2.2} />
+                <Text style={styles.heroBadgeText}>Smart Business App</Text>
+              </View>
+              <View style={[styles.statusPill, isOnline ? styles.statusPillOnline : styles.statusPillOffline]}>
+                <View style={[styles.statusDot, isOnline ? styles.statusDotOnline : styles.statusDotOffline]} />
+                <Text style={[styles.statusPillText, !isOnline && styles.statusPillTextOffline]}>
+                  {isOnline ? 'Online' : 'Offline'}
+                </Text>
+              </View>
+            </View>
             <Animated.View style={[styles.logoWrap, logoAnimatedStyle]}>
               <Image source={APP_LOGO} style={styles.logo} resizeMode="contain" />
             </Animated.View>
             <Text style={styles.appName}>{APP_NAME}</Text>
             <Text style={styles.tagline}>{TAGLINE}</Text>
+            <View style={styles.heroStatsRow}>
+              <HeroStat icon={CircleCheckBig} label="Version" value={`v${APP_VERSION}`} />
+            </View>
             {!isOnline && !isChecking ? (
               <View style={styles.offlineBadge}>
                 <Sparkles size={14} color="#8a5a00" strokeWidth={2.2} />
@@ -318,7 +340,6 @@ export default function AboutAppScreen() {
         <Animated.View style={containerAnimatedStyle}>
           <AboutCard title="Version Info" icon={Smartphone}>
             <InfoRow label="App Version" value={`v${APP_VERSION}`} />
-            <InfoRow label="Build Number" value={buildNumber} />
             <InfoRow label="Last Updated" value={lastUpdated} subdued={lastUpdated === 'Not available'} />
           </AboutCard>
 
@@ -340,7 +361,7 @@ export default function AboutAppScreen() {
           </AboutCard>
 
           <AboutCard title="Actions" icon={Info}>
-            <View style={styles.actionRow}>
+            <View style={styles.actionGrid}>
               <ActionButton
                 label="Check for Updates"
                 icon={RefreshCw}
@@ -367,37 +388,125 @@ export default function AboutAppScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f6f9fd',
+    backgroundColor: '#eef4fb',
   },
   content: {
     paddingHorizontal: 16,
     paddingTop: 16,
-    paddingBottom: 28,
+    paddingBottom: 32,
     gap: 14,
   },
   heroCard: {
+    position: 'relative',
     borderRadius: 26,
-    backgroundColor: '#ffffff',
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#d8e3f0',
-    alignItems: 'center',
+    backgroundColor: '#f7fbff',
+    borderWidth: 1,
+    borderColor: '#d8e5f4',
     paddingHorizontal: 20,
-    paddingVertical: 22,
+    paddingTop: 18,
+    paddingBottom: 20,
+    overflow: 'hidden',
     shadowColor: '#102644',
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.08,
-    shadowRadius: 22,
-    elevation: 5,
+    shadowOffset: { width: 0, height: 14 },
+    shadowOpacity: 0.1,
+    shadowRadius: 24,
+    elevation: 6,
+    gap: 10,
+  },
+  heroOrbOne: {
+    position: 'absolute',
+    top: -28,
+    right: -10,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: 'rgba(62, 111, 184, 0.12)',
+  },
+  heroOrbTwo: {
+    position: 'absolute',
+    bottom: -34,
+    left: -18,
+    width: 110,
+    height: 110,
+    borderRadius: 55,
+    backgroundColor: 'rgba(132, 180, 228, 0.14)',
+  },
+  heroTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 10,
+  },
+  heroBadge: {
+    minHeight: 34,
+    paddingHorizontal: 12,
+    borderRadius: 17,
+    backgroundColor: '#e9f2ff',
+    borderWidth: 1,
+    borderColor: '#d4e2f7',
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
+    alignSelf: 'flex-start',
+  },
+  heroBadgeText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#163b6d',
+  },
+  statusPill: {
+    minHeight: 32,
+    paddingHorizontal: 10,
+    borderRadius: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
+    borderWidth: 1,
+  },
+  statusPillOnline: {
+    backgroundColor: '#ecfbf2',
+    borderColor: '#c7ead4',
+  },
+  statusPillOffline: {
+    backgroundColor: '#fff6e5',
+    borderColor: '#f0d8a0',
+  },
+  statusDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  statusDotOnline: {
+    backgroundColor: '#1d8f4f',
+  },
+  statusDotOffline: {
+    backgroundColor: '#b7791f',
+  },
+  statusPillText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#1d8f4f',
+  },
+  statusPillTextOffline: {
+    color: '#8a5a00',
   },
   logoWrap: {
-    width: 86,
-    height: 86,
-    borderRadius: 28,
-    backgroundColor: '#edf4ff',
+    alignSelf: 'center',
+    width: 92,
+    height: 92,
+    borderRadius: 30,
+    backgroundColor: '#ffffff',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 4,
+    marginTop: 4,
+    marginBottom: 2,
+    borderWidth: 1,
+    borderColor: '#d8e5f5',
+    shadowColor: '#163252',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.12,
+    shadowRadius: 20,
+    elevation: 4,
   },
   logo: {
     width: 64,
@@ -405,17 +514,58 @@ const styles = StyleSheet.create({
     borderRadius: 18,
   },
   appName: {
+    textAlign: 'center',
     fontSize: 24,
     fontWeight: '800',
     color: '#0c2445',
     letterSpacing: 0.2,
   },
   tagline: {
+    alignSelf: 'center',
     fontSize: 13,
     lineHeight: 19,
     color: '#60748d',
     textAlign: 'center',
-    maxWidth: 280,
+    maxWidth: 290,
+  },
+  heroStatsRow: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  heroStat: {
+    flex: 1,
+    minHeight: 72,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.88)',
+    borderWidth: 1,
+    borderColor: '#dbe6f4',
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  heroStatIconWrap: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: '#edf4ff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  heroStatText: {
+    flex: 1,
+    gap: 2,
+  },
+  heroStatValue: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: '#102644',
+  },
+  heroStatLabel: {
+    fontSize: 12,
+    color: '#64778f',
+    fontWeight: '600',
   },
   offlineBadge: {
     marginTop: 6,
@@ -441,6 +591,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: 12,
+    minHeight: 28,
   },
   infoLabel: {
     flex: 1,
@@ -459,9 +610,9 @@ const styles = StyleSheet.create({
     color: '#8aa0b9',
   },
   linkRow: {
-    minHeight: 46,
+    minHeight: 52,
     borderRadius: 16,
-    backgroundColor: '#f6f9fd',
+    backgroundColor: '#f2f7fd',
     borderWidth: 1,
     borderColor: '#dce6f2',
     paddingHorizontal: 14,
@@ -482,12 +633,12 @@ const styles = StyleSheet.create({
     color: '#0f3567',
     fontWeight: '700',
   },
-  actionRow: {
+  actionGrid: {
     gap: 10,
   },
   actionButton: {
-    minHeight: 48,
-    borderRadius: 16,
+    minHeight: 54,
+    borderRadius: 18,
     paddingHorizontal: 16,
     flexDirection: 'row',
     alignItems: 'center',
@@ -495,12 +646,17 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   actionButtonPrimary: {
-    backgroundColor: '#0f3567',
+    backgroundColor: '#123a70',
+    shadowColor: '#123a70',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.18,
+    shadowRadius: 14,
+    elevation: 3,
   },
   actionButtonSecondary: {
-    backgroundColor: '#edf4ff',
+    backgroundColor: '#ffffff',
     borderWidth: 1,
-    borderColor: '#d6e3f5',
+    borderColor: '#d6e2f3',
   },
   actionButtonDisabled: {
     opacity: 0.6,
@@ -516,8 +672,8 @@ const styles = StyleSheet.create({
     color: '#0f3567',
   },
   footer: {
-    paddingTop: 4,
-    paddingBottom: 6,
+    paddingTop: 6,
+    paddingBottom: 10,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
