@@ -101,8 +101,14 @@ jest.mock('@/components/UpdateDownloadModal', () => ({
 }));
 
 jest.mock('@/constants/app-version', () => ({
-  APP_VERSION: '1.0.11',
+  APP_VERSION: '1.0.2',
 }));
+
+async function waitForVersionCheckToFinish(screen: ReturnType<typeof render>) {
+  await waitFor(() => expect(mockFetchLatestAppVersion).toHaveBeenCalled());
+  await waitFor(() => expect(screen.queryByText('Checking app version...')).toBeNull());
+  await waitFor(() => expect(screen.queryByText('Checking app version…')).toBeNull());
+}
 
 describe('LoginScreen', () => {
   beforeEach(() => {
@@ -123,7 +129,7 @@ describe('LoginScreen', () => {
     mockNetworkState.isOnline = true;
     mockNetworkState.refreshStatus.mockReset();
     mockFetchLatestAppVersion.mockResolvedValue({
-      latestVersion: '1.0.11',
+      latestVersion: '1.0.2',
       downloadUrl: 'https://example.com/app.apk',
     });
     mockDownloadAndInstallApk.mockResolvedValue(undefined);
@@ -138,7 +144,7 @@ describe('LoginScreen', () => {
   it('shows required field validation errors for empty login submission', async () => {
     const screen = render(<LoginScreen />);
 
-    await waitFor(() => expect(mockFetchLatestAppVersion).toHaveBeenCalled());
+    await waitForVersionCheckToFinish(screen);
 
     fireEvent.press(screen.getByText('Sign In'));
 
@@ -150,7 +156,7 @@ describe('LoginScreen', () => {
   it('shows the manual login panel by default when biometric login is unavailable', async () => {
     const screen = render(<LoginScreen />);
 
-    await waitFor(() => expect(mockFetchLatestAppVersion).toHaveBeenCalled());
+    await waitForVersionCheckToFinish(screen);
 
     expect(screen.getByText('Welcome Back')).toBeTruthy();
     expect(screen.getByPlaceholderText('AD ID')).toBeTruthy();
@@ -169,7 +175,7 @@ describe('LoginScreen', () => {
 
     const screen = render(<LoginScreen />);
 
-    await waitFor(() => expect(mockFetchLatestAppVersion).toHaveBeenCalled());
+    await waitForVersionCheckToFinish(screen);
 
     fireEvent.changeText(screen.getByPlaceholderText('AD ID'), 'user.id');
     fireEvent.changeText(screen.getByPlaceholderText('AD Password'), 'secret');
@@ -182,7 +188,7 @@ describe('LoginScreen', () => {
         rememberMe: true,
         enableBiometric: false,
       });
-      expect(mockReplace).toHaveBeenCalledWith('/qsr-reports/sales-summary');
+      expect(mockReplace).toHaveBeenCalledWith('/(tabs)');
     });
   });
 
@@ -202,7 +208,7 @@ describe('LoginScreen', () => {
 
     const screen = render(<LoginScreen />);
 
-    await waitFor(() => expect(mockFetchLatestAppVersion).toHaveBeenCalled());
+    await waitForVersionCheckToFinish(screen);
 
     fireEvent.changeText(screen.getByPlaceholderText('AD ID'), 'user.id');
     fireEvent.changeText(screen.getByPlaceholderText('AD Password'), 'secret');
@@ -219,7 +225,7 @@ describe('LoginScreen', () => {
     });
 
     await waitFor(() => {
-      expect(mockReplace).toHaveBeenCalledWith('/qsr-reports/sales');
+      expect(mockReplace).toHaveBeenCalledWith('/(tabs)');
     });
   });
 
@@ -249,7 +255,7 @@ describe('LoginScreen', () => {
 
     const screen = render(<LoginScreen />);
 
-    await waitFor(() => expect(mockFetchLatestAppVersion).toHaveBeenCalled());
+    await waitForVersionCheckToFinish(screen);
     await waitFor(() => expect(mockAuthState.loginWithBiometrics).toHaveBeenCalled());
 
     expect(await screen.findByText('Authenticating fingerprint')).toBeTruthy();
@@ -280,7 +286,7 @@ describe('LoginScreen', () => {
 
     const screen = render(<LoginScreen />);
 
-    await waitFor(() => expect(mockFetchLatestAppVersion).toHaveBeenCalled());
+    await waitForVersionCheckToFinish(screen);
     expect(await screen.findByText('Fingerprint Login')).toBeTruthy();
     expect(screen.getByText('Use ID and Password Instead')).toBeTruthy();
     expect(screen.queryByPlaceholderText('AD ID')).toBeNull();
@@ -318,7 +324,7 @@ describe('LoginScreen', () => {
 
     const screen = render(<LoginScreen />);
 
-    await waitFor(() => expect(mockFetchLatestAppVersion).toHaveBeenCalled());
+    await waitForVersionCheckToFinish(screen);
 
     fireEvent.changeText(screen.getByPlaceholderText('AD ID'), 'user.id');
     fireEvent.changeText(screen.getByPlaceholderText('AD Password'), 'secret');
@@ -334,7 +340,7 @@ describe('LoginScreen', () => {
     });
 
     await waitFor(() => {
-      expect(mockReplace).toHaveBeenCalledWith('/qsr-reports/sales');
+      expect(mockReplace).toHaveBeenCalledWith('/(tabs)');
     });
   });
 
@@ -349,7 +355,7 @@ describe('LoginScreen', () => {
 
     const screen = render(<LoginScreen />);
 
-    await waitFor(() => expect(mockFetchLatestAppVersion).toHaveBeenCalled());
+    await waitForVersionCheckToFinish(screen);
 
     fireEvent.changeText(screen.getByPlaceholderText('AD ID'), 'user.id');
     fireEvent.changeText(screen.getByPlaceholderText('AD Password'), 'secret');
@@ -375,7 +381,7 @@ describe('LoginScreen', () => {
 
     const screen = render(<LoginScreen />);
 
-    await waitFor(() => expect(mockFetchLatestAppVersion).toHaveBeenCalled());
+    await waitForVersionCheckToFinish(screen);
 
     fireEvent.changeText(screen.getByPlaceholderText('AD ID'), 'user.id');
     fireEvent.changeText(screen.getByPlaceholderText('AD Password'), 'secret');
@@ -407,7 +413,7 @@ describe('LoginScreen', () => {
 
     const screen = render(<LoginScreen />);
 
-    await waitFor(() => expect(mockFetchLatestAppVersion).toHaveBeenCalled());
+    await waitForVersionCheckToFinish(screen);
 
     await waitFor(() => {
       expect(mockAuthState.loginWithBiometrics).toHaveBeenCalled();
@@ -423,13 +429,13 @@ describe('LoginScreen', () => {
 
   it('shows the force update state when a higher latest version is returned', async () => {
     mockFetchLatestAppVersion.mockResolvedValue({
-      latestVersion: '1.0.12',
+      latestVersion: '1.0.3',
       downloadUrl: 'https://example.com/app.apk',
     });
 
     const screen = render(<LoginScreen />);
 
-    expect(await screen.findByText('ForceUpdate:1.0.12')).toBeTruthy();
+    expect(await screen.findByText('ForceUpdate:1.0.3')).toBeTruthy();
 
     await act(async () => {
       await Promise.resolve();

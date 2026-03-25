@@ -47,3 +47,9 @@ reactNativeArchitectures=armeabi-v7a,arm64-v8a
 
 For all kind of device All supports:
 reactNativeArchitectures=armeabi-v7a,arm64-v8a,x86,x86_64
+
+
+
+Jest tests sequentially (one by one)
+
+    npx jest --runInBand
