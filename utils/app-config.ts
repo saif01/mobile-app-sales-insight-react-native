@@ -3,6 +3,10 @@ import Constants from 'expo-constants';
 type ExtraConfig = {
   appUat?: boolean;
   webViewToken?: string;
+  aboutCompanyWebsite?: string;
+  aboutSupportEmail?: string;
+  aboutSupportPhone?: string;
+  aboutDeveloperName?: string;
 };
 
 function toObject(value: unknown): Record<string, unknown> | null {
@@ -44,4 +48,24 @@ export function getWebViewToken(): string {
 export function getAppName(): string {
   const name = Constants.expoConfig?.name;
   return typeof name === 'string' && name.trim().length > 0 ? name.trim() : 'SalesInsight';
+}
+
+export function getAboutCompanyWebsite(): string {
+  const value = getAppExtra().aboutCompanyWebsite;
+  return typeof value === 'string' && value.trim().length > 0 ? value.trim() : 'https://cpbangladesh.com';
+}
+
+export function getAboutSupportEmail(): string {
+  const value = getAppExtra().aboutSupportEmail;
+  return typeof value === 'string' && value.trim().length > 0 ? value.trim() : 'syful@cpbangladesh.com';
+}
+
+export function getAboutSupportPhone(): string {
+  const value = getAppExtra().aboutSupportPhone;
+  return typeof value === 'string' && value.trim().length > 0 ? value.trim() : '+8801730731201';
+}
+
+export function getAboutDeveloperName(): string {
+  const value = getAppExtra().aboutDeveloperName;
+  return typeof value === 'string' && value.trim().length > 0 ? value.trim() : 'CPB Application Development Team';
 }

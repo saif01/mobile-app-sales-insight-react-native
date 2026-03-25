@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronRight, FileText, LayoutDashboard, LogOut } from 'lucide-react-native';
+import { ChevronDown, ChevronRight, FileText, Info, LayoutDashboard, LogOut } from 'lucide-react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -183,6 +183,14 @@ export default function NavigationPanelScreen() {
 
   const accountItems: PanelItem[] = [
     {
+      id: 'about-app',
+      routeKey: 'about',
+      label: 'About App',
+      subtitle: 'Version, company, and support info',
+      icon: Info,
+      onPress: () => router.push('/about'),
+    },
+    {
       id: 'logout',
       label: 'Logout',
       subtitle: 'Sign out from this device',
@@ -210,10 +218,10 @@ export default function NavigationPanelScreen() {
             </Text>
           </View>
         ) : null}
+        <Section title="General" items={generalItems} activeKey={activeKey} />
         {hasAnyQsrReportAccess(accessPermissions) ? (
           <QsrReportsGroup activeKey={activeKey} accessPermissions={accessPermissions} />
         ) : null}
-        <Section title="General" items={generalItems} activeKey={activeKey} />
       </ScrollView>
 
       <View style={styles.bottomSection}>

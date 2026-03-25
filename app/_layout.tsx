@@ -66,6 +66,7 @@ function RootLayoutContent() {
           <Stack.Screen name="qsr-reports" options={{ headerShown: false }} />
           <Stack.Screen name="appbar-examples" options={{ headerShown: false }} />
           <Stack.Screen name="navigation-panel" options={{ headerShown: false }} />
+          <Stack.Screen name="about" options={{ headerShown: false }} />
           <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
         </Stack>
 
