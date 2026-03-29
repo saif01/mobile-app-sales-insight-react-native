@@ -10,6 +10,7 @@ import 'react-native-reanimated';
 LogBox.ignoreLogs(['Unable to activate keep awake']);
 
 import { AuthProvider, useAuth } from '@/components/auth-provider';
+import { AuthSessionGuardProvider } from '@/components/auth-session-guard-provider';
 import { AppUpdateProvider } from '@/components/app-update-provider';
 import { GlobalLoaderProvider } from '@/components/global-loader-provider';
 import { LogoutConfirmationProvider } from '@/components/logout-confirmation-provider';
@@ -59,23 +60,25 @@ function RootLayoutContent() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AppUpdateProvider>
-        <View style={{ flex: 1 }}>
-          <Stack>
-            <Stack.Screen name="index" options={{ headerShown: false }} />
-            <Stack.Screen name="login" options={{ headerShown: false }} />
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="qsr-reports" options={{ headerShown: false }} />
-            <Stack.Screen name="appbar-examples" options={{ headerShown: false }} />
-            <Stack.Screen name="navigation-panel" options={{ headerShown: false }} />
-            <Stack.Screen name="about" options={{ headerShown: false }} />
-            <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-          </Stack>
+      <AuthSessionGuardProvider>
+        <AppUpdateProvider>
+          <View style={{ flex: 1 }}>
+            <Stack>
+              <Stack.Screen name="index" options={{ headerShown: false }} />
+              <Stack.Screen name="login" options={{ headerShown: false }} />
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="qsr-reports" options={{ headerShown: false }} />
+              <Stack.Screen name="appbar-examples" options={{ headerShown: false }} />
+              <Stack.Screen name="navigation-panel" options={{ headerShown: false }} />
+              <Stack.Screen name="about" options={{ headerShown: false }} />
+              <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+            </Stack>
 
-          {!isReady ? <PreLoader /> : null}
-          <UatRibbon />
-        </View>
-      </AppUpdateProvider>
+            {!isReady ? <PreLoader /> : null}
+            <UatRibbon />
+          </View>
+        </AppUpdateProvider>
+      </AuthSessionGuardProvider>
       <StatusBar style="light" />
     </ThemeProvider>
   );

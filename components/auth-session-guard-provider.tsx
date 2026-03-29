@@ -1,4 +1,4 @@
-import { usePathname } from 'expo-router';
+import { usePathname, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { AppState } from 'react-native';
 
@@ -8,8 +8,10 @@ import { isStoredAccessPermissionsValid } from '@/utils/auth-session-validation'
 
 export function AuthSessionGuardProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const { isAuthenticated, isRestoring, logout } = useAuth();
   const isCheckingSessionRef = useRef(false);
+  const lastRedirectedPathRef = useRef<string | null>(null);
 
   const validateStoredSession = useCallback(async () => {
     if (isRestoring || isCheckingSessionRef.current) {
@@ -29,6 +31,23 @@ export function AuthSessionGuardProvider({ children }: { children: React.ReactNo
       isCheckingSessionRef.current = false;
     }
   }, [isAuthenticated, isRestoring, logout]);
+
+  useEffect(() => {
+    if (isRestoring || !pathname) {
+      return;
+    }
+
+    const isPublicPath = pathname === '/' || pathname === '/login';
+    if (!isAuthenticated && !isPublicPath && lastRedirectedPathRef.current !== pathname) {
+      lastRedirectedPathRef.current = pathname;
+      router.replace('/login');
+      return;
+    }
+
+    if (isAuthenticated) {
+      lastRedirectedPathRef.current = null;
+    }
+  }, [isAuthenticated, isRestoring, pathname, router]);
 
   useEffect(() => {
     if (!pathname || pathname === '/login') {
