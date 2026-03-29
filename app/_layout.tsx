@@ -10,6 +10,7 @@ import 'react-native-reanimated';
 LogBox.ignoreLogs(['Unable to activate keep awake']);
 
 import { AuthProvider, useAuth } from '@/components/auth-provider';
+import { AppUpdateProvider } from '@/components/app-update-provider';
 import { GlobalLoaderProvider } from '@/components/global-loader-provider';
 import { LogoutConfirmationProvider } from '@/components/logout-confirmation-provider';
 import { PreLoader } from '@/components/PreLoader';
@@ -58,21 +59,23 @@ function RootLayoutContent() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <View style={{ flex: 1 }}>
-        <Stack>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="login" options={{ headerShown: false }} />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="qsr-reports" options={{ headerShown: false }} />
-          <Stack.Screen name="appbar-examples" options={{ headerShown: false }} />
-          <Stack.Screen name="navigation-panel" options={{ headerShown: false }} />
-          <Stack.Screen name="about" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-        </Stack>
+      <AppUpdateProvider>
+        <View style={{ flex: 1 }}>
+          <Stack>
+            <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen name="login" options={{ headerShown: false }} />
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="qsr-reports" options={{ headerShown: false }} />
+            <Stack.Screen name="appbar-examples" options={{ headerShown: false }} />
+            <Stack.Screen name="navigation-panel" options={{ headerShown: false }} />
+            <Stack.Screen name="about" options={{ headerShown: false }} />
+            <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+          </Stack>
 
-        {!isReady ? <PreLoader /> : null}
-        <UatRibbon />
-      </View>
+          {!isReady ? <PreLoader /> : null}
+          <UatRibbon />
+        </View>
+      </AppUpdateProvider>
       <StatusBar style="light" />
     </ThemeProvider>
   );
