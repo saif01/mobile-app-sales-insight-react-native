@@ -4,7 +4,7 @@ import { loginWithMockApi } from '@/services/auth-api';
 
 jest.mock('axios');
 jest.mock('@/constants/app-version', () => ({
-  APP_VERSION: '1.0.4',
+  APP_VERSION: '1.0.5',
   APP_NAME: 'SalesInsight',
 }));
 jest.mock('@/utils/deviceInfo', () => ({
@@ -37,7 +37,7 @@ describe('auth-api', () => {
         login: 'user.id',
         password: 'pass',
         app_name: 'SalesInsight',
-        app_version: '1.0.4',
+        app_version: '1.0.5',
         mobile_details: 'Android 14 / Pixel 7',
       },
       expect.objectContaining({ timeout: 15000 })

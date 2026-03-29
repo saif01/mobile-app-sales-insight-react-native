@@ -23,7 +23,7 @@ jest.mock('@react-navigation/native', () => ({
 }));
 
 jest.mock('@/constants/app-version', () => ({
-  APP_VERSION: '1.0.4',
+  APP_VERSION: '1.0.5',
 }));
 
 describe('AppBar', () => {
@@ -42,7 +42,7 @@ describe('AppBar', () => {
     const screen = render(<AppBar title="About App" subtitle="Details" />);
 
     expect(screen.getByText('About App')).toBeTruthy();
-    expect(screen.getByText('v1.0.4')).toBeTruthy();
+    expect(screen.getByText('v1.0.5')).toBeTruthy();
   });
 
   it('handles back navigation', () => {

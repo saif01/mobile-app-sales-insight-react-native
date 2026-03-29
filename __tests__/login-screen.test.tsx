@@ -101,7 +101,7 @@ jest.mock('@/components/UpdateDownloadModal', () => ({
 }));
 
 jest.mock('@/constants/app-version', () => ({
-  APP_VERSION: '1.0.4',
+  APP_VERSION: '1.0.5',
 }));
 
 async function waitForVersionCheckToFinish(screen: ReturnType<typeof render>) {
@@ -129,7 +129,7 @@ describe('LoginScreen', () => {
     mockNetworkState.isOnline = true;
     mockNetworkState.refreshStatus.mockReset();
     mockFetchLatestAppVersion.mockResolvedValue({
-      latestVersion: '1.0.4',
+      latestVersion: '1.0.5',
       downloadUrl: 'https://example.com/app.apk',
     });
     mockDownloadAndInstallApk.mockResolvedValue(undefined);
@@ -429,13 +429,13 @@ describe('LoginScreen', () => {
 
   it('shows the force update state when a higher latest version is returned', async () => {
     mockFetchLatestAppVersion.mockResolvedValue({
-      latestVersion: '1.0.5',
+      latestVersion: '1.0.6',
       downloadUrl: 'https://example.com/app.apk',
     });
 
     const screen = render(<LoginScreen />);
 
-    expect(await screen.findByText('ForceUpdate:1.0.5')).toBeTruthy();
+    expect(await screen.findByText('ForceUpdate:1.0.6')).toBeTruthy();
 
     await act(async () => {
       await Promise.resolve();

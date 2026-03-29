@@ -1,4 +1,5 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { AppState, type AppStateStatus } from 'react-native';
 
 import { type AccessPermissions, loginWithMockApi } from '@/services/auth-api';
 import {
@@ -26,6 +27,7 @@ import {
   getBiometricSupport,
   type BiometricSupport,
 } from '@/services/biometric-auth';
+import { isStoredAccessPermissionsValid } from '@/utils/auth-session-validation';
 
 export type AuthUserProfile = {
   name: string;
@@ -83,6 +85,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [biometricEnabled, setBiometricEnabledState] = useState(false);
   const [hasBiometricCredentials, setHasBiometricCredentials] = useState(false);
   const [isRestoring, setIsRestoring] = useState(true);
+  const appStateRef = useRef<AppStateStatus>(AppState.currentState);
+
+  const clearAuthenticatedSession = useCallback(async () => {
+    await Promise.all([clearAuthToken(), clearUserProfile(), clearAccessPermissions()]);
+    setToken(null);
+    setUserProfile(null);
+    setAccessPermissions(DEFAULT_ACCESS_PERMISSIONS);
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -110,10 +120,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      setToken(storedToken);
+      const hasStoredToken = typeof storedToken === 'string' && storedToken.trim().length > 0;
+      const hasValidStoredAccessPermissions = isStoredAccessPermissionsValid(storedAccessPermissions);
+
+      if (hasStoredToken && !hasValidStoredAccessPermissions) {
+        await clearAuthenticatedSession();
+
+        if (!mounted) {
+          return;
+        }
+      } else {
+        setToken(storedToken);
+        setUserProfile(storedUserProfile);
+        setAccessPermissions(storedAccessPermissions);
+      }
+
       setRememberedLoginId(storedLoginId ?? '');
-      setUserProfile(storedUserProfile);
-      setAccessPermissions(storedAccessPermissions);
       setBiometricSupport(support);
       setBiometricEnabledState(storedBiometricEnabled);
       setHasBiometricCredentials(Boolean(storedBiometricCredentials));
@@ -125,7 +147,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [clearAuthenticatedSession]);
 
   const persistAuthenticatedSession = useCallback(
     async ({
@@ -251,11 +273,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const logout = useCallback(async () => {
-    await Promise.all([clearAuthToken(), clearUserProfile(), clearAccessPermissions()]);
-    setToken(null);
-    setUserProfile(null);
-    setAccessPermissions(DEFAULT_ACCESS_PERMISSIONS);
-  }, []);
+    await clearAuthenticatedSession();
+  }, [clearAuthenticatedSession]);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextState) => {
+      const previousState = appStateRef.current;
+      appStateRef.current = nextState;
+
+      const movedToBackground =
+        previousState === 'active' && (nextState === 'background' || nextState === 'inactive');
+
+      if (movedToBackground) {
+        if (token) {
+          void clearAuthenticatedSession();
+        }
+      }
+    });
+
+    return () => subscription.remove();
+  }, [clearAuthenticatedSession, token]);
 
   const value = useMemo<AuthContextValue>(
     () => ({

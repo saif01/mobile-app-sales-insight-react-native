@@ -42,7 +42,7 @@ jest.mock('@/utils/app-config', () => ({
 
 jest.mock('@/constants/app-version', () => ({
   APP_NAME: 'SalesInsight',
-  APP_VERSION: '1.0.4',
+  APP_VERSION: '1.0.5',
 }));
 
 jest.mock('@/components/navigation/AppBar', () => ({
@@ -63,7 +63,7 @@ describe('AboutAppScreen', () => {
     jest.clearAllMocks();
     mockNetworkState = { isOnline: true, isChecking: false };
     mockFetchLatestAppVersion.mockResolvedValue({
-      latestVersion: '1.0.4',
+      latestVersion: '1.0.6',
       downloadUrl: 'https://example.com/app.apk',
     });
     mockOpenUpdateDownload.mockResolvedValue(undefined);
@@ -81,7 +81,7 @@ describe('AboutAppScreen', () => {
     const screen = render(<AboutAppScreen />);
 
     expect(screen.getByText('SalesInsight')).toBeTruthy();
-    expect(screen.getAllByText('v1.0.4')).toHaveLength(2);
+    expect(screen.getAllByText('v1.0.5')).toHaveLength(2);
     expect(screen.getByText('CPB Application Development Team')).toBeTruthy();
     expect(screen.getByText('https://cpbangladesh.com')).toBeTruthy();
     expect(screen.getByText('syful@cpbangladesh.com')).toBeTruthy();
@@ -113,7 +113,7 @@ describe('AboutAppScreen', () => {
 
   it('offers the update download flow when a newer version exists', async () => {
     mockFetchLatestAppVersion.mockResolvedValue({
-      latestVersion: '1.0.5',
+      latestVersion: '1.0.6',
       downloadUrl: 'https://example.com/app.apk',
     });
     (Alert.alert as jest.Mock).mockImplementation((_title, _message, buttons) => {

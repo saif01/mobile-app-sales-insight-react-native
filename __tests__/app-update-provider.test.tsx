@@ -40,7 +40,7 @@ describe('AppUpdateProvider', () => {
     jest.clearAllMocks();
     mockCheckInternetConnection.mockResolvedValue(true);
     mockFetchLatestAppVersion.mockResolvedValue({
-      latestVersion: '1.0.5',
+      latestVersion: '1.0.6',
       downloadUrl: 'https://example.com/app.apk',
     });
     mockDownloadAndInstallApk.mockResolvedValue(undefined);

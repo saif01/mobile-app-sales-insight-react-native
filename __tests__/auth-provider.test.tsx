@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { AppState, Pressable, Text, View } from 'react-native';
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import {
@@ -30,6 +30,7 @@ const mockClearAuthToken = jest.fn();
 const mockClearUserProfile = jest.fn();
 const mockClearAccessPermissions = jest.fn();
 const mockAuthenticateWithBiometrics = jest.fn();
+let appStateChangeListener: ((nextState: 'active' | 'background' | 'inactive') => void) | null = null;
 
 jest.mock('@/services/auth-api', () => ({
   loginWithMockApi: (...args: unknown[]) => mockLoginWithMockApi(...args),
@@ -106,6 +107,20 @@ describe('AuthProvider', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (globalThis as typeof globalThis & { __authError?: string }).__authError = undefined;
+    appStateChangeListener = null;
+
+    jest.spyOn(AppState, 'addEventListener').mockImplementation(
+      (_type, listener: (nextState: 'active' | 'background' | 'inactive') => void) => {
+        appStateChangeListener = listener;
+        return {
+          remove: jest.fn(),
+        } as { remove: () => void };
+      }
+    );
+    Object.defineProperty(AppState, 'currentState', {
+      configurable: true,
+      value: 'active',
+    });
 
     mockGetAuthToken.mockResolvedValue(null);
     mockGetRememberedLogin.mockResolvedValue('stored.user');
@@ -147,6 +162,10 @@ describe('AuthProvider', () => {
     mockClearAuthToken.mockResolvedValue(undefined);
     mockClearUserProfile.mockResolvedValue(undefined);
     mockClearAccessPermissions.mockResolvedValue(undefined);
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
   it('restores stored auth and biometric state on mount', async () => {
@@ -233,5 +252,34 @@ describe('AuthProvider', () => {
     expect(mockClearAccessPermissions).toHaveBeenCalled();
     expect(screen.getByText('authenticated:false')).toBeTruthy();
     expect(screen.getByText('user:none')).toBeTruthy();
+  });
+
+  it('logs out on background and stays logged out when returning to active', async () => {
+    mockGetAuthToken.mockResolvedValue('stored-token');
+
+    const screen = render(
+      <AuthProvider>
+        <TestConsumer />
+      </AuthProvider>
+    );
+
+    await waitFor(() => expect(screen.getByText('restoring:false')).toBeTruthy());
+    expect(screen.getByText('authenticated:true')).toBeTruthy();
+
+    await act(async () => {
+      appStateChangeListener?.('background');
+      await Promise.resolve();
+    });
+
+    await waitFor(() => expect(mockClearAuthToken).toHaveBeenCalled());
+    expect(screen.getByText('authenticated:false')).toBeTruthy();
+
+    await act(async () => {
+      appStateChangeListener?.('active');
+      await Promise.resolve();
+    });
+
+    expect(mockLoginWithMockApi).not.toHaveBeenCalled();
+    expect(screen.getByText('authenticated:false')).toBeTruthy();
   });
 });
